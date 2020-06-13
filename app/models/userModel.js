@@ -79,6 +79,21 @@ userSchema.pre('save', function(next){
     }
 })
 
+userSchema.statics.findByCredential = function(username, password){
+    const User = this
+    return User.findOne({username})
+                .then(User => {
+                    if(!User){
+                        return Promise.reject({error : 'Invalid Username'})
+                    }
+                    return bcryptjs.compare(password, User.password)
+                        .then(result => result ? Promise.resolve(User) : Promise.reject({error : 'Invalid password'}))
+                        .catch(err => Promise.reject(err))
+                    
+                })
+                .catch(err => Promise.reject(err))
+}
+
 const User = mongoose.model('User' , userSchema)
 
 module.exports = User

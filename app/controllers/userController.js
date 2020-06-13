@@ -6,3 +6,10 @@ module.exports.register = (req, res) => {
         .then(user => res.json(user))
         .catch(err => res.json(err))
 }
+
+module.exports.login = (req, res) => {
+    User.findByCredential(req.body.username, req.body.password)
+        .then(user => {
+            res.json(user)
+        })
+}

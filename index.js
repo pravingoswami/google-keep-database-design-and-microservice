@@ -8,6 +8,7 @@ const app = express()
 const port = 3041
 
 setupDB()
+app.use(express.json())
 app.use('/', router)
 
 app.listen(port, () => {

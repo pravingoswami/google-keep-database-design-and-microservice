@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const bcryptjs = require('bcryptjs')
 
 const Schema = mongoose.Schema
 
@@ -59,6 +60,24 @@ const userSchema = new Schema({
     },
 
 }) 
+
+userSchema.pre('save', function(next){
+    const user = this
+    if(user.isNew){
+        bcryptjs.genSalt(10)
+            .then(salt => {
+                bcryptjs.hash(user.password, salt)
+                    .then(ancryptedPassword => {
+                        user.password = ancryptedPassword
+                        next()
+                    })
+                    .catch(err => console.log(err))
+            })
+            .catch(err => console.log(err))
+    } else {
+        next()
+    }
+})
 
 const User = mongoose.model('User' , userSchema)
 

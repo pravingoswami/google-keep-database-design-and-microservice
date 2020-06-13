@@ -18,3 +18,7 @@ module.exports.login = (req, res) => {
         })
         .catch(err => res.json(err))
 }
+
+module.exports.userInfo = (req, res) => {
+    res.json(req.user)
+}

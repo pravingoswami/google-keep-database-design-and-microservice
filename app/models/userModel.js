@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bcryptjs = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
 const Schema = mongoose.Schema
 
@@ -92,6 +93,23 @@ userSchema.statics.findByCredential = function(username, password){
                     
                 })
                 .catch(err => Promise.reject(err))
+}
+
+userSchema.methods.generateToken = function(ip){
+    const user = this
+    const tokenData = {
+        id : user._id,
+        username : user.username,
+        createdAt : Date.now()
+    }
+    const token = jwt.sign(tokenData, 'jwt@123')
+    user.tokens.push({token})
+    user.ips.login.push(ip)
+    user.loginCount += 1
+    return user.save()
+                .then(user => Promise.resolve(token))
+                .catch(err => Promise.reject(err))
+
 }
 
 const User = mongoose.model('User' , userSchema)

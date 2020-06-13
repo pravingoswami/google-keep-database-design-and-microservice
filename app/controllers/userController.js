@@ -8,8 +8,13 @@ module.exports.register = (req, res) => {
 }
 
 module.exports.login = (req, res) => {
+    let user
     User.findByCredential(req.body.username, req.body.password)
-        .then(user => {
-            res.json(user)
+        .then(userData => {
+            user = userData
+            return userData.generateToken(req.ip)
+                        .then(token => res.json({user, token}))
+                        .catch(err => res.json(err))
         })
+        .catch(err => res.json(err))
 }
